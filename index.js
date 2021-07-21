@@ -106,6 +106,7 @@ function main() {
         }
         else if(userInput.main == "View all employees by department"){
             
+
         }
         else if(userInput.main == "View all employees by manager"){
             
@@ -113,11 +114,15 @@ function main() {
         else if(userInput.main == "Add employee"){
             inquirer.prompt(empName)
             .then(function (userInput) {
-                inquirer.prompt(addPrompt)
+               // inquirer.prompt(addPrompt)
             })
             .then(function (userInput) {
                 console.log('it worked')
                 //function to remove use the thing where you use a mysql function here to add
+
+                    var sql = `INSERT INTO employees (fname, lname) VALUES ( "x", "xx" )`;
+                    connection.query(sql);
+                    //connection.end();
             });
         }
         else if(userInput.main == "Remove employee"){
@@ -140,6 +145,7 @@ function main() {
         }
 
     });
+
 };
 
 // Function call to initialize app
