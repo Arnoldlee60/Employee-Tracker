@@ -27,7 +27,9 @@ const mainQuestion = [
             "Update employee role",
             "Update manager role"
         ],
-    },
+    }
+];
+const empName = [
     {
         type: "input",
         name: "lname",
@@ -38,7 +40,7 @@ const mainQuestion = [
         name: "fname",
         message: "What is the employee's first name?",
     }
-];
+]
 
 const addPrompt = [ //add employee option
     {
@@ -92,18 +94,27 @@ function main() {
     inquirer.prompt(mainQuestion)
     .then(function (userInput) {
         if(userInput.main == "View all employees"){
-        //console.log(userInput)
-        //function for view all employee
- 
+
+        connection.connect(function(err) {
+            if (err) throw err;
+            connection.query("SELECT * FROM employees", function (err, result, fields) {
+              if (err) throw err;
+              console.table(result);
+            });
+          });
+
         }
         else if(userInput.main == "View all employees by department"){
-
+            
         }
         else if(userInput.main == "View all employees by manager"){
             
         }
         else if(userInput.main == "Add employee"){
-            inquirer.prompt(addPrompt)
+            inquirer.prompt(empName)
+            .then(function (userInput) {
+                inquirer.prompt(addPrompt)
+            })
             .then(function (userInput) {
                 console.log('it worked')
                 //function to remove use the thing where you use a mysql function here to add
