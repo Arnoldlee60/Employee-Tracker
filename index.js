@@ -113,6 +113,14 @@ const changeR = [
             message: "What is the new role you want to assign this employee?",
         }
 ]
+const viewDep = [
+    {
+        type: "list",
+        name: "departmentView",
+        message: "What department would you like to see?", 
+        choices: ['Sales', 'Engineering', 'Finance', 'Legal']//same as employeelist except with 'none'
+    }
+]
 function main() {
     inquirer.prompt(mainQuestion)
     .then(function (userInput) {
@@ -126,7 +134,13 @@ function main() {
         
         else if(userInput.main == "View all employees by department"){
             //do the same as all employees but thru select xxx from employees
-            process.exit;
+            inquirer.prompt(viewDep)
+            .then(function (userInput) {
+                connection.query(`SELECT * FROM employees WHERE department = "${userInput.departmentView}"`, function (err, result, fields) {
+                console.table(result);
+                main()
+            });
+            })
         }
         else if(userInput.main == "View all employees by manager"){
             //same
