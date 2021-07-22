@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const fs = require('fs');
-var counter = 0;
+var counter = 1;
 //const generateMarkdown = require('./utils/generateMarkdown.js')
 
 const connection = mysql.createConnection({
@@ -11,8 +11,6 @@ const connection = mysql.createConnection({
     password: 'password',
     database: 'work_db',
   });
-
-const employeeList = [];
 
 const mainQuestion = [
     {
@@ -26,20 +24,21 @@ const mainQuestion = [
             "Add employee",
             "Remove employee",
             "Update employee role",
-            "Update manager role"
+            "Update manager role",
+            "Nothing"
         ],
     }
 ];
 const empName = [
     {
         type: "input",
-        name: "lname",
-        message: "What is the employee's last name?",
+        name: "fname",
+        message: "What is the employee's first name?",
     },
     {
         type: "input",
-        name: "fname",
-        message: "What is the employee's first name?",
+        name: "lname",
+        message: "What is the employee's last name?",
     }
 ]
 
@@ -80,26 +79,22 @@ const addPrompt = [ //add employee option
 
 removePrompt = [ //Remove employee option
     {
-        type: "list",
-        name: "remove",
-        message: "Who would you like to remove?", 
-        choices: []
-        //push mysql stuff into array then make that the choices or somehow mysql directly
+        type: "input",
+        name: "fnameR",
+        message: "What is the first name of the employee that you wish to remove?",
+    },
+    {
+        type: "input",
+        name: "lnameR",
+        message: "What is the last name of the employee that you wish to remove?",
     }
 ]
 
 const changeM = [ //Remove employee option
     {
-        type: "list",
-        name: "changeManager",
-        message: "What employee's manager would you like to change?",
-        choices: employeeList
-    },
-    {
-        type: "list",
-        name: "manager",
-        message: "Who is the employee's manager?", 
-        choices: []//same as employeelist except with 'none'
+        type: "input",
+        name: "newManager",
+        message: "Who is the new manager you want to assign this employee?",
     }
 ];
 const again = [
@@ -110,39 +105,31 @@ const again = [
         choices: ['Yes', 'No']
     }
 ]
-
+const changeR = [
+    
+        {
+            type: "input",
+            name: "newRole",
+            message: "What is the new role you want to assign this employee?",
+        }
+]
 function main() {
     inquirer.prompt(mainQuestion)
     .then(function (userInput) {
         if(userInput.main == "View all employees"){
-
-        if(counter == 0)
-        {
-        connection.connect(function(err) {
-            if (err) throw err;
-            connection.query("SELECT * FROM employees", function (err, result, fields) {
-              if (err) throw err;
-              console.table(result);
-              main(); //reset and do again
-            });
-          });
-          counter++;
-        }
-        else
-            {
             connection.query("SELECT * FROM employees", function (err, result, fields) {
               console.table(result);
               main(); //reset and do again
             });
-            }
+            
         }
         
         else if(userInput.main == "View all employees by department"){
-            
-
+            //do the same as all employees but thru select xxx from employees
+            process.exit;
         }
         else if(userInput.main == "View all employees by manager"){
-            
+            //same
         }
         else if(userInput.main == "Add employee"){
 
@@ -152,7 +139,7 @@ function main() {
             inquirer.prompt(temp)
             .then(function (userInput) {
                 var sql = `INSERT INTO employees (fname, lname, title, department, salary, manager) VALUES ( '${userInput.fname}', '${userInput.lname}', '${userInput.role}', '${userInput.department}', '${userInput.salary}', '${userInput.manager}' )`;
-                console.log(userInput)
+                //console.log(userInput)
                 connection.query(sql);
             })
             .then(function () {
@@ -170,56 +157,146 @@ function main() {
             });
         }
         else if(userInput.main == "Remove employee"){ //you have to disable safe mode on sql with edit -> preferences
-            var temp = [];
-            temp = empName.concat(removePrompt);
-            inquirer.prompt(empName)
+            //var temp = [];
+            //temp = empName.concat(removePrompt);
+            inquirer.prompt(removePrompt)
             .then(function (userInput) {
             connection.query(`SELECT fname, lname FROM employees;`, function (err, result, fields) {
-                console.log(result)
-                console.log(result[0].fname)
-                console.log(userInput.fname)
+                //console.log(result)
+                //console.log(result[0].fname)
+                //console.log(userInput.fname)
                 for(var i = 0; i < result.length; i ++)
                 {
                 //console.log(result[i].fname)
-                if(result[i].fname == userInput.fname)
+                if(result[i].fname == userInput.fnameR && result[i].lname == userInput.lnameR)
                     {
-                        var sql = `DELETE FROM employees WHERE fname = '${userInput.fname}';`
-                        console.log(userInput)
+                        var sql = `DELETE FROM employees WHERE fname = '${userInput.fnameR}';`
+                        //console.log(userInput)
                         connection.query(sql);
                     }
                 }
 
               });
             })
-            
-            /*
-            inquirer.prompt(removePrompt)
-            .then(function (userInput) {
-                console.log('it worked')
-                console.log(result[0].fName)
-                //function to remove use the thing where you use a mysql function here to remove
+            .then(function () {
+                inquirer.prompt(again) //do again
+                .then(function (userInput) {
+                //console.log(userInput.again)
+                if(userInput.again == 'Yes')
+                {
+                main();
+                }
+                    else{
+                        console.log("Finished")
+                    }
+                })
             });
-            */
+
         }
         else if(userInput.main == "Update employee role"){
+            var temp = [];
+            temp = empName.concat(changeR);
+            inquirer.prompt(temp)
+            .then(function (userInput) {
+                connection.query(`SELECT fname, lname FROM employees;`, function (err, result, fields) {
+
+                    for(var i = 0; i < result.length; i ++)
+                {
+                //console.log(result[i].fname)
+                if(result[i].fname == userInput.fname && result[i].lname == userInput.lname)
+                    {
+
+                var sql = `UPDATE employees
+                           SET title = '${userInput.newRole}'
+                           WHERE fname = '${userInput.fname}';`
+                 console.log(userInput)
+                connection.query(sql);
+            }}
+            })
+            })
+            .then(function () {
+                inquirer.prompt(again) //do again
+                .then(function (userInput) {
+                console.log(userInput.again)
+                if(userInput.again == 'Yes')
+                {
+                main();
+                }
+                    else{
+                        console.log("Finished")
+                    }
+                })
+            });
             
         }
-        else{
-        //Update manager role
-        inquirer.prompt(changeM)
-        .then(function (userInput) {
-            console.log('it worked')
-            //function to remove use the thing where you use a mysql function here to remove
-        });
-        }
+        else if (userInput.main == "Update manager role")
+        {   //Update manager role
+            var temp = [];
+            temp = empName.concat(changeM);
+            inquirer.prompt(temp)
+            .then(function (userInput) {
+                connection.query(`SELECT fname, lname FROM employees;`, function (err, result, fields) {
 
+                    for(var i = 0; i < result.length; i ++)
+                {
+                //console.log(result[i].fname)
+                if(result[i].fname == userInput.fname && result[i].lname == userInput.lname)
+                    {
+
+                var sql = `UPDATE employees
+                           SET manager = '${userInput.newManager}'
+                           WHERE fname = '${userInput.fname}';`
+                 //console.log(userInput)
+                connection.query(sql);
+            }}
+            })
+            })
+            .then(function () {
+                inquirer.prompt(again) //do again
+                .then(function (userInput) {
+                console.log(userInput.again)
+                if(userInput.again == 'Yes')
+                {
+                main();
+                }
+                    else{
+                        console.log("Finished")
+                    }
+                })
+            });
+        }
+        else
+        {
+            console.log("Finished")
+        }
     });
 
 };
 
-// Function call to initialize app
-main();
 
 
+//start table up at the beginning so that there is no error when you something other than view table first
+connection.query("SELECT * FROM employees", function (err, result, fields) {
+    console.table(result);
+    main(); //reset and do again
+  });
+
+
+
+/*old code
+
+if(counter == 0)
+        {
+        connection.connect(function(err) {
+            if (err) throw err;
+            connection.query("SELECT * FROM employees", function (err, result, fields) {
+              if (err) throw err;
+              console.table(result);
+              main(); //reset and do again
+            });
+          });
+          counter++;
+        }
+        */
 
 
