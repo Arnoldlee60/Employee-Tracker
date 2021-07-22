@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const fs = require('fs');
+var counter = 0;
 //const generateMarkdown = require('./utils/generateMarkdown.js')
 
 const connection = mysql.createConnection({
@@ -114,15 +115,27 @@ function main() {
     .then(function (userInput) {
         if(userInput.main == "View all employees"){
 
+        if(counter == 0)
+        {
         connection.connect(function(err) {
             if (err) throw err;
             connection.query("SELECT * FROM employees", function (err, result, fields) {
               if (err) throw err;
               console.table(result);
+              main(); //reset and do again
             });
           });
-
+          counter++;
         }
+                else
+                {
+                connection.query("SELECT * FROM employees", function (err, result, fields) {
+                console.table(result);
+                main(); //reset and do again
+                });
+            }
+        }
+        
         else if(userInput.main == "View all employees by department"){
             
 
