@@ -59,9 +59,20 @@ const addPrompt = [ //add employee option
     },
     {
         type: "list",
+        name: "department",
+        message: "Where is the employee's department?", 
+        choices: ['Sales', 'Engineering', 'Finance', 'Legal']//same as employeelist except with 'none'
+    },
+    {
+        type: "input",
+        name: "salary",
+        message: "How much does the employee make?"
+    },
+    {
+        type: "list",
         name: "manager",
         message: "Who is the employee's manager?", 
-        choices: []//same as employeelist except with 'none'
+        choices: ['a', 'b', 'c']//same as employeelist except with 'none'
     }
 ];
 
@@ -89,6 +100,14 @@ const changeM = [ //Remove employee option
         choices: []//same as employeelist except with 'none'
     }
 ];
+const again = [
+    {
+        type: "list",
+        name: "again",
+        message: "Continue?",
+        choices: ['Yes', 'No']
+    }
+]
 
 function main() {
     inquirer.prompt(mainQuestion)
@@ -112,17 +131,28 @@ function main() {
             
         }
         else if(userInput.main == "Add employee"){
-            inquirer.prompt(empName)
-            .then(function (userInput) {
-               // inquirer.prompt(addPrompt)
-            })
-            .then(function (userInput) {
-                console.log('it worked')
-                //function to remove use the thing where you use a mysql function here to add
 
-                    var sql = `INSERT INTO employees (fname, lname) VALUES ( "x", "xx" )`;
-                    connection.query(sql);
-                    //connection.end();
+            var temp = [];
+            temp = empName.concat(addPrompt);
+            //console.log(temp);
+            inquirer.prompt(temp)
+            .then(function (userInput) {
+                var sql = `INSERT INTO employees (fname, lname, title, department, salary, manager) VALUES ( '${userInput.fname}', '${userInput.lname}', '${userInput.role}', '${userInput.department}', '${userInput.salary}', '${userInput.manager}' )`;
+                console.log(userInput)
+                connection.query(sql);
+            })
+            .then(function () {
+                inquirer.prompt(again) //do again
+                .then(function (userInput) {
+                console.log(userInput.again)
+                if(userInput.again == 'Yes')
+                {
+                main();
+                }
+                    else{
+                        console.log("Finished")
+                    }
+                })
             });
         }
         else if(userInput.main == "Remove employee"){
