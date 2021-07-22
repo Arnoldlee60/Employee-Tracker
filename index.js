@@ -127,12 +127,12 @@ function main() {
           });
           counter++;
         }
-                else
-                {
-                connection.query("SELECT * FROM employees", function (err, result, fields) {
-                console.table(result);
-                main(); //reset and do again
-                });
+        else
+            {
+            connection.query("SELECT * FROM employees", function (err, result, fields) {
+              console.table(result);
+              main(); //reset and do again
+            });
             }
         }
         
