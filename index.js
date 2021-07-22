@@ -82,10 +82,11 @@ const removePrompt = [ //Remove employee option
         type: "list",
         name: "remove",
         message: "Who would you like to remove?", 
-        choices: employeeList
+        choices: []
         //push mysql stuff into array then make that the choices or somehow mysql directly
     }
 ];
+
 
 const changeM = [ //Remove employee option
     {
@@ -168,12 +169,35 @@ function main() {
                 })
             });
         }
-        else if(userInput.main == "Remove employee"){
+        else if(userInput.main == "Remove employee"){ //you have to disable safe mode on sql with edit -> preferences
+            connection.query(`SELECT fname, lname FROM employees;`, function (err, result, fields) {
+                console.log(result)
+                for(var i = 0; i < result.length; i ++)
+                {
+                console.log(result[i].fname)
+                }
+
+              });
+            
+            
+            
+            
+            
+            
+            
+            var temp = [];
+            temp = empName.concat(removePrompt);
+            
+            
+            
+            /*
             inquirer.prompt(removePrompt)
             .then(function (userInput) {
                 console.log('it worked')
+                console.log(result[0].fName)
                 //function to remove use the thing where you use a mysql function here to remove
             });
+            */
         }
         else if(userInput.main == "Update employee role"){
             
