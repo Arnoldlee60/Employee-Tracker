@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
     database: 'work_db',
   });
 
-const employeeList = ['dog', 'cat'];
+const employeeList = [];
 
 const mainQuestion = [
     {
@@ -77,7 +77,8 @@ const addPrompt = [ //add employee option
     }
 ];
 
-const removePrompt = [ //Remove employee option
+
+removePrompt = [ //Remove employee option
     {
         type: "list",
         name: "remove",
@@ -85,8 +86,7 @@ const removePrompt = [ //Remove employee option
         choices: []
         //push mysql stuff into array then make that the choices or somehow mysql directly
     }
-];
-
+]
 
 const changeM = [ //Remove employee option
     {
@@ -170,25 +170,27 @@ function main() {
             });
         }
         else if(userInput.main == "Remove employee"){ //you have to disable safe mode on sql with edit -> preferences
+            var temp = [];
+            temp = empName.concat(removePrompt);
+            inquirer.prompt(empName)
+            .then(function (userInput) {
             connection.query(`SELECT fname, lname FROM employees;`, function (err, result, fields) {
                 console.log(result)
+                console.log(result[0].fname)
+                console.log(userInput.fname)
                 for(var i = 0; i < result.length; i ++)
                 {
-                console.log(result[i].fname)
+                //console.log(result[i].fname)
+                if(result[i].fname == userInput.fname)
+                    {
+                        var sql = `DELETE FROM employees WHERE fname = '${userInput.fname}';`
+                        console.log(userInput)
+                        connection.query(sql);
+                    }
                 }
 
               });
-            
-            
-            
-            
-            
-            
-            
-            var temp = [];
-            temp = empName.concat(removePrompt);
-            
-            
+            })
             
             /*
             inquirer.prompt(removePrompt)
