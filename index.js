@@ -69,13 +69,12 @@ const addPrompt = [ //add employee option
         message: "How much does the employee make?"
     },
     {
-        type: "list",
+        type: "input",
         name: "manager",
         message: "Who is the employee's manager?", 
-        choices: ['a', 'b', 'c']//same as employeelist except with 'none'
+        //choices: ['a', 'b', 'c']//same as employeelist except with 'none'
     }
 ];
-
 
 removePrompt = [ //Remove employee option
     {
@@ -120,6 +119,14 @@ const viewDep = [
         message: "What department would you like to see?", 
         choices: ['Sales', 'Engineering', 'Finance', 'Legal']//same as employeelist except with 'none'
     }
+];
+const viewMan = [
+    {
+        type: "input",
+        name: "managerView",
+        message: "What manager's employees would you like to see'?"
+        //choices: ['Sales', 'Engineering', 'Finance', 'Legal']//same as employeelist except with 'none'
+    }
 ]
 function main() {
     inquirer.prompt(mainQuestion)
@@ -144,6 +151,13 @@ function main() {
         }
         else if(userInput.main == "View all employees by manager"){
             //same
+            inquirer.prompt(viewMan)
+            .then(function (userInput) {
+                connection.query(`SELECT * FROM employees WHERE manager = "${userInput.managerView}"`, function (err, result, fields) {
+                console.table(result);
+                main()
+            });
+            })
         }
         else if(userInput.main == "Add employee"){
 

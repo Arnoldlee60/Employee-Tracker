@@ -13,11 +13,26 @@ CREATE TABLE employees (
   PRIMARY KEY (id)
 );
 INSERT INTO employees ( fname, lname, title, department, salary, manager)
-VALUES ('Arnold', 'Lee', 'Sales Lead', 'Engineering', 1000000, null),
-('Example1', 'Lee', 'Manager', 'Engineering', 22222, 'Arnold'),
-('Example2', 'Lee', 'Manager', 'Sales', 33333, 'Example1'),
-('Example3', 'Lee', 'Manager', 'Legal', 44444, 'Example2'),
-('Example4', 'Lee', 'Manager', 'Fincance', 55555, 'Example3')
+VALUES 
+('Arnold', 'Lee', 'Sales Lead', 'Engineering', 1000000, null),
+('one', 'uno', 'Manager', 'Engineering', 22222, 'Arnold'),
+('two', 'dos', 'Manager', 'Sales', 33333, 'Example1'),
+('three', 'tres', 'Manager', 'Legal', 44444, 'Example2'),
+('four', 'quatro', 'Manager', 'Finance', 55555, 'Example3')
 ;
 
+
+/*
+
 SELECT * FROM employees;
+
+DELETE FROM employees WHERE fname = 'Example1';
+
+SELECT fname FROM employees;
+
+SELECT fname, lname FROM employees;
+
+UPDATE employees
+SET title = 'Manager'
+WHERE fname = 'Arnold';
+
